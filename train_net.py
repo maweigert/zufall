@@ -10,7 +10,7 @@ import numpy as np
 from keras.optimizers import Adam
 
 from resunet_model import resunet_model
-from create_samples import create_samples
+from create_samples import create_stripes, create_letters
 
 
 def build_model(input_shape):
