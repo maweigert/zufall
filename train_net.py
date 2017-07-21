@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
 
     print("building model...")
-    model = build_model(X.shape[1:])
+    model = build_model((None,None,1))
 
     model.compile(loss="mean_squared_error", optimizer=Adam(lr=0.0001))
 
@@ -36,4 +36,4 @@ if __name__ == '__main__':
 
     model.fit(X, Y, batch_size=64, epochs=n_epochs, validation_split=.1)
 
-    model.save_weights(fname, overwrite=True)
+    model.save(fname, overwrite=True)
