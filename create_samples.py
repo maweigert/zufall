@@ -38,7 +38,7 @@ def create_sample_stripes(n_samples, n_size=128, sigma_noise=.9):
 def _image_from_word(word, pos=(0, 0), size=None):
     if size is None:
         size = TEXT_IMAGE_SIZE
-    print("create image for text = '%s ...'" % word)
+    #print("create image for text = '%s ...'" % word)
     im = Image.new("RGB", size)
     fnt = ImageFont.truetype("data/xkcd.ttf", size=70)
     ImageDraw.Draw(im).text(pos, word, font=fnt)
@@ -77,4 +77,19 @@ def create_sample_words(n_samples, sigma_noise=.9):
 
 
 if __name__ == '__main__':
-    X, Y = create_sample_words(10)
+    import matplotlib.pyplot as plt
+
+    X, Y = create_sample_words(1000)
+
+    plt.figure(facecolor = "k")
+
+    for i, (U, title) in enumerate(zip((X[:3], Y[:3]), ("input (X)", "original (Y)"))):
+        for j, u in enumerate(U):
+            plt.subplot(2, len(X[:3]), i * len(X[:3]) + j + 1)
+            plt.imshow(np.squeeze(u), cmap="gray")
+            plt.axis("off")
+
+            if j == len(U) // 2:
+                plt.title(title, color = "w")
+
+    plt.show()
