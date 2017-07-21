@@ -21,7 +21,7 @@ def create_samples(n_samples):
     return X, Y
 
 
-def create_samples(n_samples, n_size = 128, sigma_noise = 1.):
+def create_samples(n_samples, n_size = 128, sigma_noise = .9):
 
 
     # create some random stripe patterns
@@ -30,7 +30,11 @@ def create_samples(n_samples, n_size = 128, sigma_noise = 1.):
     angles = np.random.normal(0, 1, (n_samples,2,1,1))
     angles *= 1./np.linalg.norm(angles, axis = 1, keepdims = True)
 
-    Y = .5+.5*np.sin(angles[:,0]*_X0+angles[:,1]*_Y0)[:, np.newaxis,:,:]
+
+    _X1 = _X0+.6/n_size*np.random.uniform(-1, 1, (n_samples, 1, 1)) * _X0 ** 2
+    _A = angles[:, 0] * _X1 + angles[:, 1] * _Y0
+
+    Y = .5+.5*np.sin(_A)[:, np.newaxis,:,:]
     X = Y + sigma_noise * np.random.normal(-1, 1, Y.shape)
 
     if K.image_dim_ordering() == "tf":

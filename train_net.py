@@ -16,22 +16,22 @@ from create_samples import create_samples
 def build_model(input_shape):
     return resunet_model(input_shape,
                          "relu",
-                         1, 32, 3, 3, n_conv_per_depth=1)
+                         2, 32, 5, 5, n_conv_per_depth=2)
 
 
 if __name__ == '__main__':
 
     fname = "models/resunet.hdf5"
-    n_epochs = 20
+    n_epochs = 200
 
     print("creating samples...")
-    X, Y = create_samples(200)
+    X, Y = create_samples(2000)
 
     print("building model...")
     model = build_model(X.shape[1:])
 
 
-    model.compile(loss="mean_squared_error", optimizer=Adam(lr=0.001))
+    model.compile(loss="mean_squared_error", optimizer=Adam(lr=0.0005))
 
     print("training for %s epochs..."%n_epochs)
 

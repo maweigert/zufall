@@ -24,10 +24,13 @@ if __name__ == '__main__':
 
     plt.figure()
 
-    for i, U in enumerate((X, Y, Y_pred)):
+    for i, (U, title) in enumerate(zip((X, Y_pred, Y),("input","network","original"))):
         for j, u in enumerate(U):
             plt.subplot(3, len(X), i * 3 + j + 1)
-            plt.imshow(np.squeeze(u))
+            plt.imshow(np.squeeze(u), cmap = "gray")
             plt.axis("off")
+
+            if j==len(U)//2:
+                plt.title(title)
 
     plt.show()
