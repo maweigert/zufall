@@ -36,7 +36,10 @@ def create_stripes(n_samples, n_size = 128, sigma_noise = .9):
 
 
 def create_letters(n_samples, n_size = 128, sigma_noise = .9):
-    def _single(text):
+    a = np.genfromtxt("words.txt", dtype = str)
+    np.random.shuffle(a)
+    def _single():
+        text = a[np.random.randint(0,len(a))]
         print("create image for text = '%s ...'"%text)
         im = Image.new("RGB", (n_size, n_size))
         fnt = ImageFont.truetype("Arial", size=30*n_size//128)
@@ -45,7 +48,7 @@ def create_letters(n_samples, n_size = 128, sigma_noise = .9):
         ImageDraw.Draw(im).text(pos.astype(int), text, font=fnt)
         return 1/255.*np.asarray(im)[...,0].T
 
-    Y = np.stack([_single("".join(chr(np.random.randint(65,91)) for _ in range(6))) for _ in range(n_samples)])
+    Y = np.stack([_single() for _ in range(n_samples)])
     Y = Y[:,np.newaxis]
     X = Y + sigma_noise * np.random.normal(-1, 1, Y.shape)
 
