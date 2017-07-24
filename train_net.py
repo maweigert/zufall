@@ -34,6 +34,6 @@ if __name__ == '__main__':
 
     print("training for %s epochs..." % n_epochs)
 
-    model.fit(X, Y, batch_size=64, epochs=n_epochs, validation_split=.1)
+    model.fit(X, Y, batch_size=64, nb_epoch=n_epochs, validation_split=.1)
 
     model.save(fname, overwrite=True)

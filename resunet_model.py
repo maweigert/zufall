@@ -8,7 +8,7 @@ from __future__ import print_function, unicode_literals, absolute_import, divisi
 
 from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, Dropout, GaussianNoise, Activation,Dropout, Activation, BatchNormalization
 from keras.models import Model
-from keras.layers.merge import Concatenate, Add
+from keras.layers import Merge
 import keras.backend as K
 
 
@@ -21,7 +21,7 @@ def conv_block2(n_filter, n1, n2,
                 **kwargs
                 ):
     def _func(lay):
-        s = Conv2D(n_filter, (n1, n2), padding=border_mode, kernel_initializer=init,**kwargs)(lay)
+        s = Conv2D(n_filter, n1, n2, border_mode=border_mode, init=init,**kwargs)(lay)
         if batch_norm:
             s = BatchNormalization()(s)
         s = Activation(activation)(s)
@@ -78,7 +78,7 @@ def unet_block(n_depth=2, n_filter_base=16, n_row=3, n_col=3, n_conv_per_depth=2
 
         # ...and up with skip layers
         for n in reversed(range(n_depth)):
-            layer = Concatenate(axis = channel_axis)([UpSampling2D((2, 2))(layer), skip_layers[n]])
+            layer = Merge(concat_axis = channel_axis, mode='concat')([UpSampling2D((2, 2))(layer), skip_layers[n]])
             for i in range(n_conv_per_depth - 1):
                 layer = conv_block2(n_filter_base * 2 ** n, n_row, n_col,
                                     dropout=dropout,
@@ -118,8 +118,8 @@ def resunet_model(input_shape, last_activation, n_depth=2, n_filter_base=16, n_r
                       dropout=dropout,
                       n_conv_per_depth = n_conv_per_depth)(input)
 
-    final = Add()([Conv2D(n_channel_out, (3, 3), activation='linear', padding = "same", name = "final_residual")(unet), input])
+    final = Merge()([Conv2D(n_channel_out, 3, 3, activation='linear', border_mode = "same", name = "final_residual")(unet), input])
     final = Activation(activation=last_activation)(final)
 
-    return Model(inputs=input, outputs=final)
+    return Model(input=input, output=final)
 
