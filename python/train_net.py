@@ -20,11 +20,12 @@ def build_model(input_shape):
 
 
 if __name__ == '__main__':
-    fname = "models/resunet.hdf5"
     n_epochs = 60
+    sigma_noise = 1.9
+    fname = "models/resunet.hdf5"
 
     print("creating samples...")
-    X, Y = create_sample_words(2000, sigma_noise=1.9)
+    X, Y = create_sample_words(2000, sigma_noise=sigma_noise)
 
 
     print("building model...")
