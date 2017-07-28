@@ -15,6 +15,7 @@ import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
 import net.imglib2.type.numeric.RealType;
 
+import org.scijava.ItemIO;
 import org.scijava.command.Command;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -25,17 +26,23 @@ import org.scijava.ui.UIService;
 @Plugin(type = Command.class, menuPath = "Plugins>Denoise", headless = true)
 public class DenoisePlugin<T extends RealType<T>> implements Command {
 
-    @Parameter
+    @Parameter(label = "input data", type = ItemIO.INPUT)
     private Dataset currentData;
     
     @Parameter(label = "tensorflow model file")
     private File model;
+    
+    @Parameter(label = "useless button")
+    private Boolean uselessButton;
 
     @Parameter
     private UIService uiService;
 
     @Parameter
     private OpService opService;
+    
+    @Parameter(type = ItemIO.OUTPUT)
+    private Dataset result;
 
 	@Override
     public void run() {
@@ -45,10 +52,9 @@ public class DenoisePlugin<T extends RealType<T>> implements Command {
 		
 		TFModel model1 = new TFModel(model_name);
 
-		Dataset output_float = model1.apply_to_dataset(currentData);
+		result = model1.apply_to_dataset(currentData);
 		
 //		uiService.show(output);
-		uiService.show(output_float);
     }
 
     /**
@@ -62,11 +68,9 @@ public class DenoisePlugin<T extends RealType<T>> implements Command {
     public static void main(final String... args) throws Exception {
         // create the ImageJ application context with all available services
         final ImageJ ij = new ImageJ();
-        //ij.ui().showUI();
 
         // ask the user for a file to open
-//        final File file = ij.ui().chooseFile(null, "open");
-        final File file = new File("/home/random/Development/imagej/plugins/zufall/plugin/src/main/resources/x-stack.tif");
+        final File file = ij.ui().chooseFile(null, "open");
         
         if(file.exists()){
             // load the dataset
