@@ -7,7 +7,7 @@ import numpy as np
 import keras.backend as K
 from PIL import Image, ImageDraw, ImageFont
 
-TEXT_IMAGE_SIZE = (256, 72)
+TEXT_IMAGE_SIZE = (320, 96)
 
 
 def create_sample_stripes(n_samples, n_size=128, sigma_noise=.9):
@@ -44,19 +44,26 @@ def _image_from_word(word, pos=(0, 0), size=None):
     ImageDraw.Draw(im).text(pos, word, font=fnt)
     return 1 / 255. * np.asarray(im)[..., 0].T
 
+def forward_model(y, sigma_noise=1.9):
+    x = y + sigma_noise * np.random.normal(0, 1, y.shape)
+    return x
+    
 
-def create_words_iter(words, sigma_noise=.9, size  =None, pos=None):
+def create_words_iter(words, sigma_noise=1.9, size  =None, pos=None, add_exclamation = True):
+    excla = ["!",":","?"]
     def _single(word):
+        if np.random.randint(0,2)==0:
+            word = word + excla[np.random.randint(0,len(excla))]
         if pos is None:
-            x = TEXT_IMAGE_SIZE[0] * np.random.uniform(0, .2)
-            y = TEXT_IMAGE_SIZE[1] * np.random.uniform(0., .2)
+            x = TEXT_IMAGE_SIZE[0] * np.random.uniform(0.1, .3)
+            y = TEXT_IMAGE_SIZE[1] * np.random.uniform(0.1, .3)
             return _image_from_word(word, pos=(int(x), int(y)), size=size)
         else:
             return _image_from_word(word, pos=pos, size=size)
 
     Y = np.stack([_single(w) for w in words])
     Y = Y[:, np.newaxis]
-    X = Y + sigma_noise * np.random.normal(0, 1, Y.shape)
+    X = forward_model(Y,sigma_noise)
 
     # normalize
     mi = np.percentile(X, 1, axis=(1, 2, 3), keepdims=True)
